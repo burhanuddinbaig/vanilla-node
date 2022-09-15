@@ -21,7 +21,7 @@ app.use("/home",(req,res,next)=>{
                     - ${Arr[i]}
                     
                     <form action='/api/user/Delete/${i}' method='Get'>
-                    <button type='submit''>DELETE</button>
+                    <button type='submit'>DELETE</button>
                 </form>
                 </h4>
             `)
