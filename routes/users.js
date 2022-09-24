@@ -1,45 +1,14 @@
 const { Console } = require("console");
 const express = require("express");
+const userController = require("../controller/user");
 const router = express.Router();
 
-var Arr = [];
+router.get("/addUser", userController.addUser);
 
-router.get("/addUser", (req,res,next)=>{
-    res.setHeader("Content-Type", "text/html");
-    res.write(`
-        <h1>Home Page</h1>
-        <form action='/api/user/create' method='POST'>
-            <input type='text' name='name' />
-            <button type='submit'>add user</button>
-        </form>
-    `);
+router.get("/getinfo", userController.getInfo);
 
-    res.end();
-});
+router.post("/create", userController.create);
 
-router.get("/getinfo", (req,res,next)=>{
-    console.log("test");
+router.get("/delete/:id", userController.delete);
 
-    res.end();
-});
-
-router.post("/create",(req, res, next)=>{
-    var name = req.body.name
-    if(Arr.includes(name)){
-        res.redirect("/api/user/addUser")
-    }
-    else{
-        Arr.push(name);
-        res.redirect("/home")
-    }
-    res.end();
-});
-
-router.get("/delete/:id",(req, res, next)=>{
-    const { id } = req.params
-    Arr.splice(id, 1)
-    res.redirect("/home")
-});
-
-
-module.exports = {router,Arr};
+module.exports = {router};

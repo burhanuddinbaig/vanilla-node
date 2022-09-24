@@ -1,7 +1,8 @@
 const express = require("express");
 const body_parser = require("body-parser");
-
+const userController = require("./controller/user");
 const app = express();
+
 app.use(body_parser.urlencoded({extended:false}))
 
 const userRouter = require("./routes/users")
@@ -10,7 +11,7 @@ app.use("/api/user", userRouter.router);
 
 // Home Route
 app.use("/home",(req,res,next)=>{
-    let Arr = userRouter.Arr
+    let Arr = userController.Arr
     let arrLen = Arr.length
     if(arrLen > 0){
         res.setHeader("Content-Type", "text/html");
@@ -19,7 +20,7 @@ app.use("/home",(req,res,next)=>{
             res.write(`
                 <h4>
                     - ${Arr[i]}
-                    
+
                     <form action='/api/user/Delete/${i}' method='Get'>
                     <button type='submit'>DELETE</button>
                 </form>
