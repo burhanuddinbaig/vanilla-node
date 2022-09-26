@@ -1,0 +1,6 @@
+create new users = api -> postman -> hit 
+delete users  = api 
+update
+read single
+
+read = done

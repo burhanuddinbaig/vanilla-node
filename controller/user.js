@@ -3,10 +3,23 @@ const Users = require('../model/users');
 let user = new Users();
 
 const fetchall = (req, res, next) => {
-    user.getall().then(([data])=>{
-        console.log(data)
+    let dataArr = [];
+   user.getall()
+   .then(([data])=>{
+    
+    data.forEach((rowData)=>{
+        let obj = {
+            name : rowData.name
+        };
+        dataArr.push(obj)
+    })
+    console.log(dataArr);
+     res.status(200);
+     res.send(dataArr)
+     res.end()
+//   return res.status(200).json({dataArr})
     }).catch((err)=>{
-        console.log(err)
+        console.log(err);
     });
 }
 

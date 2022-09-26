@@ -4,7 +4,6 @@ const user = require('../controller/user')
 
 // using pool
 
-
 var pool = mySQL.createPool({
     host : "localhost",
     user : "root",
