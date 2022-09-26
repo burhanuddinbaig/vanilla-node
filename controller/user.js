@@ -4,8 +4,10 @@ let user = new Users();
 
 const fetchall = (req, res, next) => {
     user.getall().then(([data])=>{
-
-    }).catch();
+        console.log(data)
+    }).catch((err)=>{
+        console.log(err)
+    });
 }
 
 var Arr = [];
@@ -51,5 +53,6 @@ module.exports = {
     getInfo : getInfo,
     create : create,
     delete : deleteUser,
-    Arr : Arr
+    Arr : Arr,
+    fetchall : fetchall
 }

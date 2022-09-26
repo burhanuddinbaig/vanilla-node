@@ -11,4 +11,6 @@ router.post("/create", userController.create);
 
 router.get("/delete/:id", userController.delete);
 
+router.get("/fetchall", userController.fetchall)
+
 module.exports = {router};

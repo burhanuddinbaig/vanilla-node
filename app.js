@@ -3,6 +3,7 @@ const body_parser = require("body-parser");
 const userController = require("./controller/user");
 const app = express();
 
+const PORT = 3000 || 4000;
 app.use(body_parser.urlencoded({extended:false}))
 
 const userRouter = require("./routes/users")
@@ -32,7 +33,6 @@ app.use("/home",(req,res,next)=>{
     else{
         res.redirect("/api/user/addUser")
     }
-
     res.end();
 });
 
@@ -42,4 +42,4 @@ app.all("*", function(req,res){
     res.end();
 });
 
-app.listen(3000);
+app.listen(PORT, console.log(`Server is running at ${PORT}`));

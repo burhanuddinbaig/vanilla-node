@@ -1,31 +1,43 @@
+const { query } = require('express');
 const mySQL = require('mysql2')
 const user = require('../controller/user')
 
-const con = mySQL.createConnection(
-    {
-        host: 'localhost',
-        user: 'root',
-        database: 'node_proj'
-    }
-);
+// using pool
 
 
+var pool = mySQL.createPool({
+    host : "localhost",
+    user : "root",
+    password : "",
+    database : "node_proj",
+    waitForConnections: true,
+    connectionLimit: 20,
+    queueLimit: 0
+});
 
-con.query('SELECT * from User',
-    function(err, results, fields){
-        console.log(results);
-        console.log(fields);
-    }
-);
+module.exports = pool.promise();
 
-//using pool
+// pool.query("SELECT * from User", function(err, rows, fields){
+//     console.log([rows])
+// })
 
-// var pool = mySQL.createPool({
-//     connectionLimit: 20,
-//     host : "localhost",
-//     user : "root",
-//     password : "",
-//     database : "node_sql"
-// });
+
 
 // module.exports = pool.promise();
+
+// Simple Connection
+
+// const con = mySQL.createConnection(
+//     {
+//         host: 'localhost',
+//         user: 'root',
+//         database: 'node_proj'
+//     }
+// );
+
+// con.query('SELECT * from User',
+//     function(err, results, fields){
+//         console.log(results);
+//         console.log(fields);
+//     }
+// );
