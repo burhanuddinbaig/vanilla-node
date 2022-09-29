@@ -1,8 +1,8 @@
-const { query } = require('express');
-const mySQL = require('mysql2')
-const user = require('../controller/user')
+            //--------- database connection ---------//
 
-// using pool
+const mySQL = require('mysql2')
+
+// db connection using pool
 
 var pool = mySQL.createPool({
     host : "localhost",

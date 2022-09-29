@@ -1,17 +1,18 @@
 const express = require("express");
 const body_parser = require("body-parser");
-const userController = require("./controller/user");
-const app = express();
+const app = express();          //to call function reference express()
 
-const PORT = 3000 || 4000;
+const PORT = 3000 || 4000;          //Port may be 3000 or 4000
 app.use(body_parser.urlencoded({extended:false}))
 
-const userRouter = require("./routes/users")
+const userController = require("./controller/user");        //to import User Controller
+const userRouter = require("./routes/users")                //to import User Router
 
+// User Routes
 app.use("/api/user", userRouter.router);
 
 // Home Route
-app.use("/home",(req,res,next)=>{
+app.use("/home", (req,res,next)=>{
     let Arr = userController.Arr
     let arrLen = Arr.length
     if(arrLen > 0){
@@ -30,7 +31,7 @@ app.use("/home",(req,res,next)=>{
         }
         res.write("<a href='/api/user/addUser'>Add New</a>")
     }
-    else{
+    else{                              // to redirect to add user if no user found
         res.redirect("/api/user/addUser")
     }
     res.end();
@@ -42,4 +43,5 @@ app.all("*", function(req,res){
     res.end();
 });
 
-app.listen(PORT, console.log(`Server is running at ${PORT}`));
+// To log the server running status
+app.listen(PORT, console.log(`Server is running at localhost:${PORT}`));

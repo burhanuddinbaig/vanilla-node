@@ -1,71 +1,124 @@
-const Users = require('../model/users');
+                    //--------User.js Controller-----------//
 
-let user = new Users();
+const bodyParser = require('body-parser');
+const Users = require('../model/users');    // to import user model
 
+let user = new Users();     // to initialize a user model instance
+const entity = "User";
+
+// create user controller
+const create = (req, res, next)=>{
+    let payload = req.body;
+
+    user.create(payload)
+    .then(()=>{
+        res.status(201)
+        res.send({'msg':`${entity} created sucessfully`})
+        res.end();
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+};
+
+// to fetch all users from db
 const fetchall = (req, res, next) => {
     let dataArr = [];
-   user.getall()
-   .then(([data])=>{
-    
-    data.forEach((rowData)=>{
-        let obj = {
-            name : rowData.name
-        };
-        dataArr.push(obj)
-    })
-    console.log(dataArr);
-     res.status(200);
-     res.send(dataArr)
-     res.end()
-//   return res.status(200).json({dataArr})
+
+    user.getall()           // calling getall from model
+    .then(([data])=>{
+        data.forEach((rowData)=>{
+            let obj = {
+                id : rowData.id,
+                name : rowData.name
+            };
+            dataArr.push(obj)
+        })
+        res.status(200);
+        res.send(dataArr)
+        res.end()
     }).catch((err)=>{
         console.log(err);
     });
 }
 
+// get single users
+const getInfo = (req,res,next)=>{
+    const { id } = req.params
+    let dataArr = [];
+
+    user.getsingle(id)      // calling getsingle from model
+    .then(([data])=>{
+        let row = data[0]
+        obj = {
+            id : row.id,
+            name : row.name,
+            email : row.email
+        }
+
+        res.status(200)
+        res.send(obj)
+        res.end();
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+};
+
 var Arr = [];
 
+// add user controller
 const addUser = (req,res,next)=>{
-    res.setHeader("Content-Type", "text/html");
-    res.write(`
-        <h1>Home Page</h1>
-        <form action='/api/user/create' method='POST'>
-            <input type='text' name='name' />
-            <button type='submit'>add user</button>
-        </form>
-    `);
-    res.end();
+    // let payload = req.body;
+
+    // res.end();
 };
 
-const getInfo = (req,res,next)=>{
-    console.log("test");
+// Update
+const update = (req, res, next)=>{
+    let payload = req.body;
+    const { id } = req.params
 
-    res.end();
+    user.update(id, payload)
+    .then(()=>{
+        console.log(res);
+        res.status(201)
+        res.send({'msg':`${entity} updated sucessfully`})
+        res.end();
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
 };
 
-const create = (req, res, next)=>{
-    var name = req.body.name
-    if(Arr.includes(name)){
-        res.redirect("/api/user/addUser")
-    }
-    else{
-        Arr.push(name);
-        res.redirect("/home")
-    }
-    res.end();
-};
-
+// delete user controller
 const deleteUser = (req, res, next)=>{
     const { id } = req.params
-    Arr.splice(id, 1)
-    res.redirect("/home")
+
+    user.delete(id)      // calling getsingle from model
+    .then(([data])=>{
+
+        let obj = {
+            id : id             // to indicate that such id has been deleted
+        }
+
+        res.status(200)
+        res.send(obj)
+        res.end();
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+
+    // res.redirect("/home")
 }
 
+// to export controller objects
 module.exports = { 
     addUser : addUser,
-    getInfo : getInfo,
     create : create,
+    getInfo : getInfo,
+    fetchall : fetchall,
+    update : update,
     delete : deleteUser,
-    Arr : Arr,
-    fetchall : fetchall
 }
