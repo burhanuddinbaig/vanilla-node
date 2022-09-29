@@ -10,7 +10,7 @@ module.exports = class User {                       // User model class
         qry += `values('${name}', '${password}', '${email}')`;
         return temp;
     };
-    getall(){                                       // get all users function
+    getall(){                                       // get all users Function
         return db.query("SELECT * from User");
     };
     getsingle(id){                                  // get single user
