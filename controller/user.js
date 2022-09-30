@@ -2,23 +2,68 @@
 
 const bodyParser = require('body-parser');
 const Users = require('../model/users');    // to import user model
+const bcrypt = require('bcrypt');           // to use bcrypt for password hashing
+const { body, validationResult } = require('express-validator')   // usser express-validator for form validations
 
 let user = new Users();     // to initialize a user model instance
+
+// constants
 const entity = "User";
+const salt = 11;
+
+// login controller
+const login = (req, res, next)=>{
+    let payload = req.body;
+
+    user.login(payload.name)      // calling getsingle from model
+    .then(([data])=>{
+        let row = data[0]
+
+        // promt error if username not found
+        if(!row){
+            res.status(401);
+            res.send({'msg' : 'Incorrect username or password'});
+            res.end();
+        }
+
+        // compare password
+        bcrypt.compare(payload.password, row.password, (err, result) => {
+            if(result){
+                res.status(200);
+                res.send({'msg' : 'Login successfull'});
+            }
+            else{
+                res.status(401);
+                res.send({'msg' : 'Incorrect username or password'});
+            }
+            res.end();
+        });
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+}
 
 // create user controller
 const create = (req, res, next)=>{
     let payload = req.body;
 
-    user.create(payload)
-    .then(()=>{
-        res.status(201)
-        res.send({'msg':`${entity} created sucessfully`})
-        res.end();
-    })
-    .catch((err)=>{
-        console.log(err);
+    bcrypt.hash(payload.password, salt).then((hash) => {
+        payload.password = hash;
+        console.log(hash);
+        console.log(payload.password);
+    
+        user.create(payload)
+        .then(()=>{
+            res.status(201)
+            res.send({'msg':`${entity} created sucessfully`})
+            res.end();
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
     });
+    // console.log(payload.password + 'this');
 };
 
 // to fetch all users from db
@@ -30,7 +75,8 @@ const fetchall = (req, res, next) => {
         data.forEach((rowData)=>{
             let obj = {
                 id : rowData.id,
-                name : rowData.name
+                name : rowData.name,
+                password : rowData.password
             };
             dataArr.push(obj)
         })
@@ -70,7 +116,7 @@ var Arr = [];
 // add user controller
 const addUser = (req,res,next)=>{
     // let payload = req.body;
-
+    
     // res.end();
 };
 
@@ -115,6 +161,7 @@ const deleteUser = (req, res, next)=>{
 
 // to export controller objects
 module.exports = { 
+    login : login,
     addUser : addUser,
     create : create,
     getInfo : getInfo,
