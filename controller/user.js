@@ -3,6 +3,7 @@
 const bodyParser = require('body-parser');
 const Users = require('../model/users');    // to import user model
 const bcrypt = require('bcrypt');           // to use bcrypt for password hashing
+
 const { body, validationResult } = require('express-validator')   // usser express-validator for form validations
 
 let user = new Users();     // to initialize a user model instance
@@ -50,9 +51,12 @@ const create = (req, res, next)=>{
 
     bcrypt.hash(payload.password, salt).then((hash) => {
         payload.password = hash;
-        console.log(hash);
-        console.log(payload.password);
-    
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+           return res.status(400).json({ errors: errors.array() });
+        }
+
         user.create(payload)
         .then(()=>{
             res.status(201)
@@ -113,13 +117,6 @@ const getInfo = (req,res,next)=>{
 
 var Arr = [];
 
-// add user controller
-const addUser = (req,res,next)=>{
-    // let payload = req.body;
-    
-    // res.end();
-};
-
 // Update
 const update = (req, res, next)=>{
     let payload = req.body;
@@ -162,10 +159,10 @@ const deleteUser = (req, res, next)=>{
 // to export controller objects
 module.exports = { 
     login : login,
-    addUser : addUser,
     create : create,
     getInfo : getInfo,
     fetchall : fetchall,
     update : update,
     delete : deleteUser,
+    body : body,                // body for validation
 }

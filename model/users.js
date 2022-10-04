@@ -9,6 +9,12 @@ module.exports = class User {                       // User model class
             FROM User WHERE name = ${name}`)                            // db query for login
     };
 
+    findByEmail(email)                                                       // login function
+    {
+        return db.query(`SELECT id 
+            FROM User WHERE email = ${email}`)                            // db query for login
+    };
+
     create({name, password, email})                                     // create new user
     {
         // Insert Query
