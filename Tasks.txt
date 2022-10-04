@@ -1,6 +1,11 @@
-create new users = api -> postman -> hit 
-delete users  = api 
+create new users = api -> postman -> hit
+delete users  = api
 update
 read single
 
 Password Hashing
+
+Seperate files for Validations
+helper -> helper
+
+Working with Images using Multer

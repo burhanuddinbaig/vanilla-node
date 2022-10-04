@@ -1,22 +1,15 @@
 const { Console } = require("console");
 const express = require("express");
-const userController = require("../controller/user");
 const router = express.Router();
+
+const userController = require("../controller/user");   // to import Controllers
+const helper = require("../helper/helper");   // to import Validations from helper
 
 // login route
 router.post("/login", userController.login);
 
 // CREATE route
-router.post("/create",
-        userController.body('email').isEmail().normalizeEmail(),    // validation for email
-        userController.body('password').isStrongPassword({
-            minLength: 8,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1
-        })
-        .withMessage("Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number"),
-        userController.create);
+router.post("/create", helper.validateUser, userController.create);
 
 // READ routes
 router.get("/getinfo/:id", userController.getInfo);
