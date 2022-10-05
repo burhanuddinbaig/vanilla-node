@@ -3,6 +3,8 @@
 const bodyParser = require('body-parser');
 const Users = require('../model/users');    // to import user model
 const bcrypt = require('bcrypt');           // to use bcrypt for password hashing
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/'});
 
 const { body, validationResult } = require('express-validator')   // usser express-validator for form validations
 
@@ -12,7 +14,6 @@ let user = new Users();     // to initialize a user model instance
 const entity = "User";
 const salt = 11;
 var Arr = [];
-
 
 // login controller
 const login = async (req, res, next)=>{

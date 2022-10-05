@@ -1,25 +1,25 @@
-const { Console } = require("console");
-const express = require("express");
+const { Console } = require('console');
+const express = require('express');
 const router = express.Router();
 
-const userController = require("../controller/user");   // to import Controllers
-const helper = require("../helper/helper");   // to import Validations from helper
+const userController = require('../controller/user');   // to import Controllers
+const helper = require('../helper/helper');   // to import Validations from helper
 
 // login route
-router.post("/login", userController.login);
+router.post('/login', userController.login);
 
 // CREATE route
-router.post("/create", helper.validateUser, userController.create);
+router.post('/create', helper.validateUser, userController.create);
 
 // READ routes
-router.get("/getinfo/:id", userController.getInfo);
+router.get('/getinfo/:id', userController.getInfo);
 
-router.get("/fetchall", userController.fetchall)
+router.get('/fetchall', userController.fetchall)
 
 // Update route
-router.put("/update/:id", userController.update)
+router.put('/update/:id', userController.update)
 
 // Delete route
-router.get("/delete/:id", userController.delete);
+router.get('/delete/:id', userController.delete);
 
 module.exports = {router};

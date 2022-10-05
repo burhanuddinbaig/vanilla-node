@@ -8,4 +8,6 @@ Password Hashing
 Seperate files for Validations
 helper -> helper
 
+error Route using Next
+
 Working with Images using Multer
