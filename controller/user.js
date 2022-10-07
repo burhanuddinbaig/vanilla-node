@@ -3,47 +3,56 @@
 const bodyParser = require('body-parser');
 const Users = require('../model/users');    // to import user model
 const bcrypt = require('bcrypt');           // to use bcrypt for password hashing
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/'});
-
 const { body, validationResult } = require('express-validator')   // usser express-validator for form validations
+const jwt = require('jsonwebtoken');            // for json authentication
+const dotenv = require('dotenv');               // dot env
 
 let user = new Users();     // to initialize a user model instance
 
 // constants
 const entity = "User";
-const salt = 11;
+const salt = 10;
 var Arr = [];
 
 // login controller
 const login = async (req, res, next)=>{
     let payload = req.body;
-    let row = data[0];
-
     try {
         const [data] = await user.login(payload.name);      // calling getsingle from model
+        let row = data[0];
+
         // promt error if username not found
         if(!row){
-            res.status(401);
-            res.send({'msg' : 'Incorrect username or password'});
-            res.end();
+            return next({code:401, msg:'Username or Password Incorrect'})
         };
+        // compare passwords
+        
+        const match = await bcrypt.compare(payload.password, row.password);
 
-        // compare password
-        bcrypt.compare(payload.password, row.password, (err, result) => {
-            if(result){
-                res.status(200);
-                res.send({'msg' : 'Login successfull'});
-            }
-            else{
-                res.status(401);
-                res.send({'msg' : 'Incorrect username or password'});
-            }
-            res.end();
-        })
+        if (match){
+            const token = generateAccessToken({ username: payload.name });
+            res.status(200);
+            res.send({'msg' : 'Login successfull', 'token' : token});
+        }
+        else{
+            return next({code:400, msg:'Login Failed'})
+        }
+        res.end();
+        // bcrypt.compare(payload.password, row.password, (err, result) => {
+        //     if(result){
+        //         const token = generateAccessToken({ username: payload.name });
+                
+        //         res.status(200);
+        //         res.send({'msg' : 'Login successfull', 'token' : token});
+        //     }
+        //     else{
+        //         return next({code:400, msg:'Login not Successfull'})
+        //     }
+        //     res.end();
+        // })
     }
     catch (error) {
-        console.log(error);
+        return next({code:400, msg:'Operation Failed'})
     }
 }
 
@@ -66,10 +75,9 @@ const create = async (req, res, next)=>{
             res.end();
         })
         .catch((err)=>{
-            console.log(err);
+            return next({code:400, msg:'Operation Failed'})
         });
     });
-    // console.log(payload.password + 'this');
 };
 
 // fetchall router
@@ -82,7 +90,8 @@ const fetchall = async (req, res, next) => {
                         let obj = {
                             id : rowData.id,
                             name : rowData.name,
-                            password : rowData.password
+                            password : rowData.password,
+                            image : rowData.image,
                         };
                         dataArr.push(obj)
                     })
@@ -90,7 +99,7 @@ const fetchall = async (req, res, next) => {
                     res.send(dataArr)
                     res.end() 
         } catch (error) {
-            console.log(error);
+            return next({code:400, msg:'Operation Failed'})
         }
     }
 
@@ -113,23 +122,25 @@ const getInfo = async (req,res,next)=>{
         res.end();
 
     } catch (error) {
-        console.log(error);
+        return next({code:400, msg:'Operation Failed'})
     }
 };
 
 // Update Controller
 const update = async (req, res, next)=>{
     let payload = req.body;
-    const { id } = req.params
+    const { id } = payload;
+    if(!id) return next({code:400, msg:'Please enter id'})
 
     try {
-        await user.update(id, payload);
+        const result = await user.update(id, payload);
 
-        res.status(201)
-        res.send({'msg':`${entity} updated sucessfully`})
-        res.end();
+        if(!result) return next({code:400, msg:'User cannot be Updated'})
+
+        return res.status(200).json({'msg': 'file uploaded sucessfully'})
+
     } catch (error) {
-        console.log(error);
+        return next({code:400, msg:'User cannot be Updated'})
     }
 };
 
@@ -148,15 +159,48 @@ const deleteUser = async (req, res, next)=>{
         res.send(obj)
         res.end();
     } catch (error) {
-        console.log(error);
+        return next({code:400, msg:'User cannot be Deleted'})
     }
 }
 
-/*
+// Upload profile image user controller
+const upload = async (req, res, next)=>{
+    const filename = req.file.filename
+    const { id } = req.params
+
+    try {
+        const result = await user.upload(id, filename);
+        if(!result)  return next({code:400, msg:'Pic cannot be uploaded'})
+        
+        return res.status(200).json({'msg': 'file uploaded sucessfully'})
+        
+    } catch (error) {
+        return next({code:400, msg:'Pic cannot be uploaded'})
+    }
+}
+
+// to generate access key token
+function generateAccessToken(username){
+    return jwt.sign(username, 'this is my secret dont tell', {expiresIn: '1800s'})
+}
+
+// to export controller objects
+module.exports = { 
+    login : login,
+    create : create,
+    getInfo : getInfo,
+    fetchall : fetchall,
+    update : update,
+    delete : deleteUser,
+    body : body,                // body for validation
+    upload : upload
+}
+
 //<<<<<<<<<<<<//////////////////////////////////////////////////>>>>>>>>>>>>>>>>>>
 //<<<<<<<<////////-----------WITHOUT ASYNC AWAIT------------///////>>>>>>>>>>>>>>>
 //<<<<<<<<<<<<//////////////////////////////////////////////////>>>>>>>>>>>>>>>>>>
 
+/*
 // login controller
 const login = (req, res, next)=>{
     let payload = req.body;
@@ -298,15 +342,3 @@ const deleteUser = (req, res, next)=>{
 }
 
 */
-
-
-// to export controller objects
-module.exports = { 
-    login : login,
-    create : create,
-    getInfo : getInfo,
-    fetchall : fetchall,
-    update : update,
-    delete : deleteUser,
-    body : body,                // body for validation
-}

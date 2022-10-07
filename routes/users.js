@@ -1,23 +1,32 @@
 const { Console } = require('console');
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/'});
 
 const userController = require('../controller/user');   // to import Controllers
+const { restrict } = require('../helper/helper');
 const helper = require('../helper/helper');   // to import Validations from helper
 
 // login route
-router.post('/login', userController.login);
+router.post('/login',  userController.login);
 
 // CREATE route
 router.post('/create', helper.validateUser, userController.create);
 
+// Upload Image
+router.put('/upload/:id', upload.single('profile'), userController.upload);
+
 // READ routes
 router.get('/getinfo/:id', userController.getInfo);
 
-router.get('/fetchall', userController.fetchall)
+router.get('/fetchall', userController.fetchall);
+
+// Protected
+// router.get('/protected', restrict);
 
 // Update route
-router.put('/update/:id', userController.update)
+router.put('/update', userController.update);
 
 // Delete route
 router.get('/delete/:id', userController.delete);

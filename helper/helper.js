@@ -1,6 +1,4 @@
 const userController = require("../controller/user");   // to import Controllers
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/'});
 
 const validateUser = [
         userController.body('email').isEmail().normalizeEmail(),    // validation for email
@@ -15,5 +13,5 @@ const validateUser = [
     ]
 
 module.exports = { 
-    validateUser : validateUser
+    validateUser : validateUser,
 }

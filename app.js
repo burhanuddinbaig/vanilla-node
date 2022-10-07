@@ -37,6 +37,16 @@ app.use("/home", (req,res,next)=>{
     res.end();
 });
 
+// Error Route for all errors
+app.use((err, req, res, next)=>{
+    // for Tocken Validation
+    // if (err.name === "UnauthorizedError") {
+    //     return res.status(401).send("invalid token...");
+    // }
+
+    return res.status(err.code).json({'msg': err.msg})
+});
+
 // Not found route
 app.all("*", function(req,res){
     res.write("Not Found");

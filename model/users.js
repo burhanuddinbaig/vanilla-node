@@ -6,7 +6,7 @@ module.exports = class User {                       // User model class
     login(name)                                                       // login function
     {
         return db.query(`SELECT id, name, password, email               
-            FROM User WHERE name = ${name}`)                            // db query for login
+            FROM User WHERE name = '${name}'`)                            // db query for login
     };
 
     findByEmail(email)                                                       // login function
@@ -41,5 +41,14 @@ module.exports = class User {                       // User model class
 
     delete(id){                                     // delete a user
         return db.query(`DELETE from User where id = ${id}`);
+    };
+
+    // Upload Image file name to a user
+    upload(id, image)
+    {
+        // UPDATE Query
+        return db.query(`UPDATE User 
+            SET image = '${image}'
+            WHERE id = ${id}`);
     };
 };
