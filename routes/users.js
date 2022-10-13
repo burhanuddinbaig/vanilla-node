@@ -15,12 +15,12 @@ router.post('/login',  userController.login);
 router.post('/create', helper.validateUser, userController.create);
 
 // Upload Image
-router.put('/upload/:id', upload.single('profile'), userController.upload);
+router.put('/upload/:id', userController.authenticateToken, upload.single('profile'), userController.upload);
 
 // READ routes
-router.get('/getinfo/:id', userController.getInfo);
+router.get('/getinfo/:id', userController.authenticateToken, userController.getInfo);
 
-router.get('/fetchall', userController.fetchall);
+router.get('/fetchall', userController.authenticateToken, userController.fetchall);
 
 // Protected
 // router.get('/protected', restrict);
@@ -29,6 +29,6 @@ router.get('/fetchall', userController.fetchall);
 router.put('/update', userController.update);
 
 // Delete route
-router.get('/delete/:id', userController.delete);
+router.get('/delete/:id', userController.authenticateToken, userController.delete);
 
 module.exports = {router};

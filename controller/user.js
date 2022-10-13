@@ -12,6 +12,7 @@ let user = new Users();     // to initialize a user model instance
 // constants
 const entity = "User";
 const salt = 10;
+const SECRET_KEY = 'this is my secret dont tell';
 var Arr = [];
 
 // login controller
@@ -137,7 +138,7 @@ const update = async (req, res, next)=>{
 
         if(!result) return next({code:400, msg:'User cannot be Updated'})
 
-        return res.status(200).json({'msg': 'file uploaded sucessfully'})
+        return res.status(200).json({'msg': 'User Updated sucessfully'})
 
     } catch (error) {
         return next({code:400, msg:'User cannot be Updated'})
@@ -179,10 +180,25 @@ const upload = async (req, res, next)=>{
     }
 }
 
+//-----------------------------FUNCTIONS-----------------------------//
+
 // to generate access key token
 function generateAccessToken(username){
-    return jwt.sign(username, 'this is my secret dont tell', {expiresIn: '1800s'})
+    return jwt.sign(username, SECRET_KEY, {expiresIn: '1800s'})
 }
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+  
+    if (token == null) return res.sendStatus(401)
+  
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+      if (err) return next({code:400, msg:'Invalid Token'})
+      req.user = user
+      next()
+    })
+  }
 
 // to export controller objects
 module.exports = { 
@@ -193,7 +209,8 @@ module.exports = {
     update : update,
     delete : deleteUser,
     body : body,                // body for validation
-    upload : upload
+    upload : upload,
+    authenticateToken : authenticateToken,
 }
 
 //<<<<<<<<<<<<//////////////////////////////////////////////////>>>>>>>>>>>>>>>>>>
